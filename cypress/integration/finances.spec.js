@@ -1,5 +1,9 @@
 /// <reference types="cypress" /> 
 
+// cy.viewport
+// arquivos de config
+// configs por linha de comando
+
 context('Dev Finances Agilizei', () => {
 
     // hooks - trechos que executam antes e depois do teste
