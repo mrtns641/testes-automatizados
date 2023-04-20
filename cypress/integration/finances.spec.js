@@ -39,5 +39,36 @@ context('Dev Finances Agilizei', () => {
         cy.get('#data-table tbody tr').should('have.length', 1)
     });
 
-    //Remover entradas e saídas
+    it('Remover entradas e saídas', () => {
+        const entrada = 'Salário'
+        const saida = 'Mercado'
+        
+        cy.get('#transaction .button').click() 
+        cy.get('#description').type(entrada)
+        cy.get('[name=amount]').type(200)
+        cy.get('[type=date]').type('2023-04-19')
+        cy.get('button').contains('Salvar').click()
+
+        cy.get('#transaction .button').click() 
+        cy.get('#description').type(saida)
+        cy.get('[name=amount]').type(-100)
+        cy.get('[type=date]').type('2023-04-19')
+        cy.get('button').contains('Salvar').click()
+        
+        //estratégia 1: voltar para o elemento pai e avançar para um td img attr
+        cy.get('td.description')
+            .contains(entrada)
+            .parent()
+            .find('img[onclick*=remove]')
+            .click()
+
+        // estratégia 2: buscar todos os irmãos e buscar o que tem img + attr
+        cy.get('td.description')
+            .contains(saida)
+            .siblings()
+            .children('img[onclick*=remove]')
+            .click()
+
+        cy.get('#data-table tbody tr').should('have.length', 0)
+    });
 });
