@@ -1,6 +1,6 @@
 /// <reference types="cypress" /> 
 
-import { format } from '../support/utils'
+import { format, prepareLocalStorage } from '../support/utils'
 
 // cy.viewport
 // arquivos de config
@@ -15,8 +15,11 @@ context('Dev Finances Agilizei', () => {
     // afterEach -> depois de cada teste
 
     beforeEach(() => {
-        cy.visit('https://devfinance-agilizei.netlify.app')
-        cy.get('#data-table tbody tr').should('have.length', 0)
+        cy.visit('https://devfinance-agilizei.netlify.app', {
+            onBeforeLoad: (win) => {
+                prepareLocalStorage(win)
+            }
+        })
     });
 
     it('Cadastrar entradas', () => {
@@ -31,7 +34,7 @@ context('Dev Finances Agilizei', () => {
         cy.get('[type=date]').type('2023-04-19')  // atributos
         cy.get('button').contains('Salvar').click() //tipo e valor
 
-        cy.get('#data-table tbody tr').should('have.length', 1)
+        cy.get('#data-table tbody tr').should('have.length', 3)
     });
 
     it('Cadastrar saídas', () => {
@@ -42,35 +45,20 @@ context('Dev Finances Agilizei', () => {
         cy.get('[type=date]').type('2023-04-19')
         cy.get('button').contains('Salvar').click()
 
-        cy.get('#data-table tbody tr').should('have.length', 1)
+        cy.get('#data-table tbody tr').should('have.length', 3)
     });
 
     it('Remover entradas e saídas', () => {
-        const entrada = 'Salário'
-        const saida = 'Mercado'
-        
-        cy.get('#transaction .button').click() 
-        cy.get('#description').type(entrada)
-        cy.get('[name=amount]').type(200)
-        cy.get('[type=date]').type('2023-04-19')
-        cy.get('button').contains('Salvar').click()
-
-        cy.get('#transaction .button').click() 
-        cy.get('#description').type(saida)
-        cy.get('[name=amount]').type(-100)
-        cy.get('[type=date]').type('2023-04-19')
-        cy.get('button').contains('Salvar').click()
-        
         //estratégia 1: voltar para o elemento pai e avançar para um td img attr
         cy.get('td.description')
-            .contains(entrada)
+            .contains('Cash')
             .parent()
             .find('img[onclick*=remove]')
             .click()
 
         // estratégia 2: buscar todos os irmãos e buscar o que tem img + attr
         cy.get('td.description')
-            .contains(saida)
+            .contains('Bolin')
             .siblings()
             .children('img[onclick*=remove]')
             .click()
@@ -78,22 +66,7 @@ context('Dev Finances Agilizei', () => {
         cy.get('#data-table tbody tr').should('have.length', 0)
     });
 
-    it.only('Validar saldo com diversas transações', () => {
-        const entrada = 'Salário'
-        const saida = 'Mercado'
-        
-        cy.get('#transaction .button').click() 
-        cy.get('#description').type(entrada)
-        cy.get('[name=amount]').type(200)
-        cy.get('[type=date]').type('2023-04-19')
-        cy.get('button').contains('Salvar').click()
-
-        cy.get('#transaction .button').click() 
-        cy.get('#description').type(saida)
-        cy.get('[name=amount]').type(-100)
-        cy.get('[type=date]').type('2023-04-19')
-        cy.get('button').contains('Salvar').click()
-
+    it('Validar saldo com diversas transações', () => {
         // 1. capturar as linhas com as transacoes e as colunas com valores
         // 2. capturar o texto dessas colunas
         // 3. formatar esses valores das linhas
