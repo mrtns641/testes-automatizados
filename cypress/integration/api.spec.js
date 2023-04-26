@@ -3,12 +3,8 @@
 context ('Testes automatizados de API - ViaCEP', () => {
 
     it.only('Consulta de um CEP válido', () => {
-        cy.request({
-            method: 'GET', //tipo da requisição que está sendo enviada
-            url: 'https://viacep.com.br/ws/01415003/json/', //url que será chamada
-            // body: 'requisicao' - caso seja necessário enviar algum paramêtro no body request (requisição POST)
-            failOnStatusCode: false //serve para que o teste não quebre mesmo que ocorra um erro
-        }).as('response')
+        const cep = '01415003'
+        cy.GetMethod(cep).as('response')
 
         cy.get('@response').should((response) => {
             expect(response.status).to.equal(200),

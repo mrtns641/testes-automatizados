@@ -23,3 +23,12 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('GetMethod', (cep) => {
+    cy.request({
+        method: 'GET', //tipo da requisição que está sendo enviada
+        url: `https://viacep.com.br/ws/${cep}/json/`, //url que será chamada
+        // body: 'requisicao' - caso seja necessário enviar algum paramêtro no body request (requisição POST)
+        failOnStatusCode: false //serve para que o teste não quebre mesmo que ocorra um erro
+    }).as('response')
+})
