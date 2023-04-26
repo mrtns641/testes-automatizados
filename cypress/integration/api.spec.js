@@ -2,7 +2,7 @@
 
 context ('Testes automatizados de API - ViaCEP', () => {
 
-    it.only('Consulta de um CEP válido', () => {
+    it('Consulta de um CEP válido', () => {
         const cep = '01415003'
         cy.GetMethod(cep).as('response')
 
@@ -18,6 +18,14 @@ context ('Testes automatizados de API - ViaCEP', () => {
             expect(response.body.gia).to.equal('1004'),
             expect(response.body.ddd).to.equal('11'),
             expect(response.body.siafi).to.equal('7107')
+        })
+    })
+
+    it.only('Consulta de um CEP inválido', () =>{
+        const cep = '0141500'
+        cy.GetMethod(cep).as('response')
+        cy.get('@response').should((response) => {
+            expect(response.status).to.equal(400)
         })
     })
 
